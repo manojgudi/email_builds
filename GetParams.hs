@@ -33,6 +33,9 @@ data EmailParam =
                 ,timeout        :: Int
                 } deriving (Show)
 
+{- I know generics will remove following code
+ - But I want to explicity write this one time
+ -}
 --instance FromJSON EmailParam
 --instance ToJSON EmailParam
 
@@ -69,15 +72,12 @@ instance ToJSON EmailParam where
                 ,"timeout"    .= timeout
                 ]
 
-jsonFile :: FilePath
-jsonFile = "email_param.json"
+getJSON :: FilePath -> IO B.ByteString
+getJSON jsonFile = B.readFile jsonFile
 
-getJSON :: IO B.ByteString
-getJSON = B.readFile jsonFile
-
-getData :: IO (EmailParam)
-getData = do
-    d <- (eitherDecode <$> getJSON) :: IO (Either String EmailParam)
+getData :: FilePath -> IO (EmailParam)
+getData jsonPath = do
+    d <- (eitherDecode <$> (getJSON jsonPath)) :: IO (Either String EmailParam)
     return (rights [d] !! 0)
 
 {-

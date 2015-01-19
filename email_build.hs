@@ -4,14 +4,12 @@ import Control.Monad
 import Control.Applicative
 
 import Data.Text (Text)
---import qualified Data.Text.Lazy.Internal as LInternal
---import qualified Data.Text.Internal as Internal
+import qualified Data.Text.Lazy as DTL
 
 import HSH (run)
 import Network.Mail.Client.Gmail (sendGmail)
 import Network.Mail.Mime
 
-import qualified Data.Text.Lazy as DTL
 import GetParams
 
 {-
@@ -53,7 +51,10 @@ emailBuild param = do
 
 main :: IO ()
 main = do
+    -- The first argument is path to emailParam json file
+    args <- getArgs
+
     -- Get JSON and decode
-    d <- getData
+    d <- getData (args !! 0)
     emailBuild d
     putStrLn "Emailed successfully.."
