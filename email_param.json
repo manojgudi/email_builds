@@ -1,0 +1,16 @@
+{
+    "from"          :   "myemailid@mysite.com",
+    "uname"         :   "my_username",
+    "passwd"        :   "123456",
+    "to"            :   ["email@add1.com", "email@add2.com"],
+    "cc"            :    ["email@add1.com", "email@add2.com"],
+    "subject"       :   "subject",
+    "body"          :   "email Body",
+    "attachment"    :   ["scripts/file1", "scripts/file2"],
+
+    "repoPath"      :   "scripts/myrepo/",
+    "nCommits"      :   1,
+    "timeout"       :   100000,
+
+    "ftp-url"       :   "where file will also be uploaded"
+    }
