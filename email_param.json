@@ -7,7 +7,7 @@
     "subject"       :   "subject",
     "body"          :   "email Body",
     "attachment"    :   ["scripts/file1", "scripts/file2"],
-    "signature"     :   "Warm Farts and Regards,\n\nMyName"
+    "signature"     :   "Warm Farts and Regards,\n\nMyName",
 
     "repoPath"      :   "scripts/myrepo/",
     "nCommits"      :   1,
