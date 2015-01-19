@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
+module GetParams where
+
 import Control.Monad
 import Control.Applicative
 
-import Data.Text
+import qualified Data.Text as DT
 import Data.Either (rights)
 import qualified Data.Text.Lazy.Internal as LInternal
 import qualified Data.Text.Internal as Internal
@@ -17,15 +19,16 @@ type IntText = Internal.Text
 
 data EmailParam = 
      EmailParam {from           :: LazyIntText
-                ,uname          :: LazyIntText
+                ,uname          :: DT.Text
                 ,passwd         :: LazyIntText
 --                ,sender         :: Address
-                ,to             :: !Array --[Address]
-                ,cc             :: !Array --[Address]
+                ,to             :: ![LazyIntText] --[Address]
+                ,cc             :: ![LazyIntText] --[Address]
                 ,subject        :: IntText
                 ,emailBody      :: LazyIntText
-                ,attachment     :: !Array --[FilePath]
-                ,repoPath       :: LazyIntText
+                ,attachment     :: ![FilePath] --[FilePath]
+                ,signature      :: !String
+                ,repoPath       :: !FilePath
                 ,nCommits       :: Int
                 ,timeout        :: Int
                 } deriving (Show)
@@ -43,6 +46,7 @@ instance FromJSON EmailParam where
                    <*> v .: "subject"
                    <*> v .: "body"
                    <*> v .: "attachment"
+                   <*> v .: "signature"
                    <*> v .: "repoPath"
                    <*> v .: "nCommits"
                    <*> v .: "timeout"
@@ -50,18 +54,19 @@ instance FromJSON EmailParam where
     parseJSON _ = mzero
 
 instance ToJSON EmailParam where
-    toJSON (EmailParam from uname passwd to cc subject emailBody attachment repoPath nCommits timeout) =
-        object [ "from"      .= from
-                ,"uname"     .= uname
-                ,"passwd"    .= passwd
-                ,"to"        .= to
-                ,"cc"        .= cc
-                ,"subject"   .= subject
-                ,"body"      .= emailBody
-                ,"attachment".= attachment
-                ,"repoPath"  .= repoPath
-                ,"nCommits"  .= nCommits
-                ,"timeout"   .= timeout
+    toJSON (EmailParam from uname passwd to cc subject emailBody attachment signature repoPath nCommits timeout) =
+        object [ "from"       .= from
+                ,"uname"      .= uname
+                ,"passwd"     .= passwd
+                ,"to"         .= to
+                ,"cc"         .= cc
+                ,"subject"    .= subject
+                ,"body"       .= emailBody
+                ,"attachment" .= attachment
+                ,"signature"  .= signature
+                ,"repoPath"   .= repoPath
+                ,"nCommits"   .= nCommits
+                ,"timeout"    .= timeout
                 ]
 
 jsonFile :: FilePath
@@ -75,12 +80,14 @@ getData = do
     d <- (eitherDecode <$> getJSON) :: IO (Either String EmailParam)
     return (rights [d] !! 0)
 
+{-
 main :: IO (Either String EmailParam)
 main = do
 --Get JSON and decode
     d <- (eitherDecode <$> getJSON) :: IO (Either String EmailParam)
     return d
-{-    case d of 
+
+    case d of 
         Left err -> putStrLn err
         Right ps -> return ps
 -}

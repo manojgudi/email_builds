@@ -1,0 +1,4 @@
+*.json
+.cabal-sandbox/ 
+*.swp
+dist/
