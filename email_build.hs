@@ -9,6 +9,7 @@ import qualified Data.Text.Lazy as DTL
 import HSH (run)
 import Network.Mail.Client.Gmail (sendGmail)
 import Network.Mail.Mime
+import System.Environment (getArgs)
 
 import GetParams
 
