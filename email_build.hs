@@ -17,7 +17,7 @@ import GetParams
 {-
  - Lifted from getAllCommitHash oldestLine project
  - is this LazyIO?
- - 
+ -
  - TODO
  - Put a provision to link all the commits to links in bitbucket repo
  - -}
@@ -61,13 +61,16 @@ prepareBody param = do
     return $ (DTL.unpack.emailBody) param ++ "\nChangeLog:\n\n" ++ (foldl1 (\x y -> x ++ "\n" ++ y) changeLog) ++ "\n\nCHECKSUMS\n" ++ fileSums ++ "\n\n" ++ (signature param)
 
 
+sendSingleMail :: EmailParam -> String -> LazyIntText -> IO()
+sendSingleMail param emailContent toId = sendGmail (from param) (passwd param) (formAddress (uname param) (from param)) (map (formAddress "") [toId]) (map (formAddress "") (cc param)) [] (subject param) (DTL.pack emailContent) (attachment param) (timeout param)
+
 {-
  - Takes EmailParam data and plugs it in sendGmail function
  - -}
 emailBuild :: EmailParam -> IO()
 emailBuild param = do
     emailContent <- prepareBody param
-    sendGmail (from param) (passwd param) (formAddress (uname param) (from param)) (map (formAddress "") (to param)) (map (formAddress "") (cc param)) [] (subject param) (DTL.pack emailContent) (attachment param) (timeout param)
+    mapM_ (sendSingleMail param emailContent) (to param)
 
 main :: IO ()
 main = do
